@@ -4,6 +4,7 @@ import axios from 'axios';
 function App() {
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('All');
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [formData, setFormData] = useState({
     customerName: '',
     itemName: '',
@@ -66,10 +67,41 @@ function App() {
       <header className="bg-brand-primary shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src="/src/LOGO.png" alt="Logo" className="h-10 w-10" />
-            <h1 className="text-3xl font-bold text-brand-light">Order Management</h1>
+            <img src="/src/LOGO.png" alt="Logo" className="h-10 w-10 rounded-full ring-2 ring-brand-accent" />
+            <h1 className="text-3xl font-bold" style={{ color: '#C5A059' }}>Order Management</h1>
           </div>
-          <p className="text-brand-accent font-semibold">Professional Order Tracking</p>
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-accent text-brand-primary font-bold text-lg hover:bg-opacity-90 transition"
+              title="User Profile"
+            >
+              U
+            </button>
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <button
+                  onClick={() => {
+                    alert('Switching Account...');
+                    setShowUserMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-bg transition"
+                >
+                  Switch Account
+                </button>
+                <hr className="my-2" />
+                <button
+                  onClick={() => {
+                    alert('Logged out successfully!');
+                    setShowUserMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
