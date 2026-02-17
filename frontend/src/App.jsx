@@ -188,9 +188,9 @@ function App() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.customerName}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.itemName}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.quantity}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${order.price}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs {order.price}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700">
-                      ${order.total ? order.total.toFixed(2) : (order.quantity * order.price).toFixed(2)}
+                      Rs {order.total ? order.total.toFixed(2) : (order.quantity * order.price).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.address}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.paymentType}</td>
