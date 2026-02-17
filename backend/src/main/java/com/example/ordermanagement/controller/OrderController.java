@@ -26,6 +26,19 @@ public class OrderController {
         return orderRepository.save(order);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody java.util.Map<String, String> request) {
+        return orderRepository.findById(id)
+                .map(order -> {
+                    String status = request.get("status");
+                    if (status != null && !status.isEmpty()) {
+                        order.setStatus(status);
+                    }
+                    return ResponseEntity.ok(orderRepository.save(order));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderRepository.deleteById(id);

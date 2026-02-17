@@ -24,4 +24,12 @@ public class Order {
     public Double getTotal() {
         return (price != null && quantity != null) ? price * quantity : 0.0;
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
 }
