@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function App() {
   const [orders, setOrders] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('All');
   const [formData, setFormData] = useState({
     customerName: '',
     itemName: '',
@@ -60,49 +61,62 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="w-full max-w-[95%] mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8 text-blue-600">Order Management System</h1>
-        
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4">Add New Order</h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="min-h-screen bg-brand-bg">
+      {/* Header */}
+      <header className="bg-brand-primary shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <img src="/src/LOGO.png" alt="Logo" className="h-10 w-10" />
+            <h1 className="text-3xl font-bold text-brand-light">Order Management</h1>
+          </div>
+          <p className="text-brand-accent font-semibold">Professional Order Tracking</p>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Form Section */}
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
+          <h2 className="text-lg font-bold text-brand-primary mb-3 flex items-center">
+            <span className="w-1 h-6 bg-brand-accent rounded mr-2"></span>
+            Add New Order
+          </h2>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Customer Name</label>
+              <label className="block text-xs font-semibold text-brand-primary mb-1">Customer Name</label>
               <input
                 type="text"
                 name="customerName"
                 value={formData.customerName}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Item Name</label>
+              <label className="block text-xs font-semibold text-brand-primary mb-1">Item Name</label>
               <input
                 type="text"
                 name="itemName"
                 value={formData.itemName}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Quantity</label>
+              <label className="block text-xs font-semibold text-brand-primary mb-1">Quantity</label>
               <input
                 type="number"
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleInputChange}
                 min="1"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Price</label>
+              <label className="block text-xs font-semibold text-brand-primary mb-1">Price</label>
               <input
                 type="number"
                 name="price"
@@ -110,28 +124,28 @@ function App() {
                 onChange={handleInputChange}
                 step="0.01"
                 min="0"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Address</label>
+              <label className="block text-xs font-semibold text-brand-primary mb-1">Address</label>
               <input
                 type="text"
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Payment Type</label>
+              <label className="block text-xs font-semibold text-brand-primary mb-1">Payment Type</label>
               <select
                 name="paymentType"
                 value={formData.paymentType}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
               >
                 <option value="Cash">Cash</option>
                 <option value="Card">Card</option>
@@ -139,12 +153,12 @@ function App() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Status</label>
+              <label className="block text-xs font-semibold text-brand-primary mb-1">Status</label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
               >
                 <option value="Pending">Pending</option>
                 <option value="Shipped">Shipped</option>
@@ -155,7 +169,7 @@ function App() {
             <div className="md:col-span-2">
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-150"
+                className="w-full bg-brand-accent text-brand-primary font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90 transition duration-150 shadow-md"
               >
                 Add Order
               </button>
@@ -163,39 +177,61 @@ function App() {
           </form>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
+        {/* Orders Table Section */}
+        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-brand-primary flex items-center">
+              <span className="w-1 h-6 bg-brand-accent rounded mr-2"></span>
+              Current Orders
+            </h2>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-semibold text-brand-primary">Filter by Status:</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition text-sm"
+              >
+                <option value="All">All Orders</option>
+                <option value="Pending">Pending</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Customer</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Item</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Qty</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Price</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Total</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Address</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Payment</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-brand-primary uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {orders.map((order) => (
-                  <tr key={order.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.customerName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.itemName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.quantity}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs {order.price}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700">
+              <tbody>
+                {orders
+                  .filter((order) => statusFilter === 'All' || order.status === statusFilter)
+                  .map((order) => (
+                  <tr key={order.id} className="border-b border-gray-200 hover:bg-brand-bg transition">
+                    <td className="px-6 py-4 text-sm font-medium text-brand-primary">{order.id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{order.customerName}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{order.itemName}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{order.quantity}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">Rs {order.price}</td>
+                    <td className="px-6 py-4 text-sm font-semibold text-brand-primary">
                       Rs {order.total ? order.total.toFixed(2) : (order.quantity * order.price).toFixed(2)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.address}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.paymentType}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    <td className="px-6 py-4 text-sm text-gray-600">{order.address}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{order.paymentType}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full 
                         ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 
                           order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
                           order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 
@@ -203,10 +239,10 @@ function App() {
                         {order.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 text-sm">
                       <button
                         onClick={() => handleDelete(order.id)}
-                        className="text-red-600 hover:text-red-900"
+                        className="border border-gray-300 text-gray-600 hover:text-red-600 hover:border-red-300 px-3 py-1 rounded-lg transition font-medium"
                       >
                         Delete
                       </button>
@@ -216,7 +252,10 @@ function App() {
               </tbody>
             </table>
             {orders.length === 0 && (
-              <p className="text-center text-gray-500 mt-4">No orders found.</p>
+              <p className="text-center text-gray-400 py-8 text-sm">No orders found. Create one to get started.</p>
+            )}
+            {orders.length > 0 && orders.filter((order) => statusFilter === 'All' || order.status === statusFilter).length === 0 && (
+              <p className="text-center text-gray-400 py-8 text-sm">No orders found with status: {statusFilter}</p>
             )}
           </div>
         </div>
