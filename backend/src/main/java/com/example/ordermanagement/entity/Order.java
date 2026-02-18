@@ -1,5 +1,6 @@
 package com.example.ordermanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,15 +22,9 @@ public class Order {
     private String paymentType;
     private String status;
 
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Double getTotal() {
         return (price != null && quantity != null) ? price * quantity : 0.0;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getStatus() {
-        return this.status;
     }
 }

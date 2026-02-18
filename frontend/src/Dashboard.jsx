@@ -22,6 +22,7 @@ export default function Dashboard({ user, onLogout }) {
       setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
+      alert('Failed to load orders. Please check if the backend server is running.');
     }
   };
 
@@ -37,27 +38,69 @@ export default function Dashboard({ user, onLogout }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/orders', formData);
+      // Validate required fields
+      if (!formData.customerName.trim()) {
+        alert('Customer Name is required');
+        return;
+      }
+      if (!formData.itemName.trim()) {
+        alert('Item Name is required');
+        return;
+      }
+      if (!formData.address.trim()) {
+        alert('Address is required');
+        return;
+      }
+      if (formData.quantity <= 0) {
+        alert('Quantity must be greater than 0');
+        return;
+      }
+      if (formData.price < 0) {
+        alert('Price cannot be negative');
+        return;
+      }
+
+      // Convert quantity to integer and price to parseFloat for type safety
+      const orderData = {
+        customerName: formData.customerName.trim(),
+        itemName: formData.itemName.trim(),
+        quantity: parseInt(formData.quantity),
+        price: parseFloat(formData.price),
+        address: formData.address.trim(),
+        paymentType: formData.paymentType,
+        status: 'Pending' // Set default status
+      };
+
+      await axios.post('http://localhost:8080/api/orders', orderData);
       fetchOrders();
-      setFormData({ 
-        customerName: '', 
-        itemName: '', 
-        quantity: 1, 
+      setFormData({
+        customerName: '',
+        itemName: '',
+        quantity: 1,
         price: 0.0,
         address: '',
         paymentType: 'Bank Transfer'
       });
+      alert('Order created successfully!');
     } catch (error) {
       console.error('Error creating order:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to create order';
+      alert(`Error: ${errorMessage}`);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this order?')) {
+      return;
+    }
     try {
       await axios.delete(`http://localhost:8080/api/orders/${id}`);
       fetchOrders();
+      alert('Order deleted successfully!');
     } catch (error) {
       console.error('Error deleting order:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to delete order';
+      alert(`Error: ${errorMessage}`);
     }
   };
 
@@ -68,12 +111,29 @@ export default function Dashboard({ user, onLogout }) {
 
   const handleStatusUpdate = async (id) => {
     try {
-      await axios.put(`http://localhost:8080/api/orders/${id}`, { status: editingStatus });
-      fetchOrders();
+      const payload = { status: editingStatus };
+      const response = await axios.put(`http://localhost:8080/api/orders/${id}/status`, payload);
+
+      // Update local state with the new order data
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === id ? { ...order, status: editingStatus } : order
+        )
+      );
+
       setEditingOrderId(null);
       setEditingStatus('');
     } catch (error) {
       console.error('Error updating order status:', error);
+
+      // Handle specific error codes
+      if (error.response?.status === 403) {
+        alert('Access Denied: You do not have permission to update this order.');
+      } else if (error.response?.status === 500) {
+        alert('Server Error: An error occurred while updating the order. Please try again.');
+      } else {
+        alert(`Error: ${error.response?.data?.message || error.message || 'Failed to update status'}`);
+      }
     }
   };
 
@@ -271,70 +331,70 @@ export default function Dashboard({ user, onLogout }) {
                 {orders
                   .filter((order) => statusFilter === 'All' || order.status === statusFilter)
                   .map((order) => (
-                  <tr key={order.id} className="border-b border-gray-200 hover:bg-brand-bg transition">
-                    <td className="px-6 py-4 text-sm font-medium text-brand-primary">{order.id}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{order.customerName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{order.itemName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{order.quantity}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">Rs {order.price}</td>
-                    <td className="px-6 py-4 text-sm font-semibold text-brand-primary">
-                      Rs {order.total ? order.total.toFixed(2) : (order.quantity * order.price).toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{order.address}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{order.paymentType}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm cursor-pointer" onClick={() => handleEditStatus(order)}>
-                      {editingOrderId === order.id ? (
-                        <div className="flex gap-2 items-center">
-                          <select
-                            value={editingStatus}
-                            onChange={(e) => setEditingStatus(e.target.value)}
-                            className="px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent"
-                            autoFocus
-                          >
-                            <option value="Pending">Pending</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Finished">Finished</option>
-                            <option value="Cancelled">Cancelled</option>
-                          </select>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusUpdate(order.id);
-                            }}
-                            className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-green-600 transition"
-                          >
-                            ✓
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCancelEdit();
-                            }}
-                            className="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ) : (
-                        <span className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full hover:opacity-80 transition
-                          ${order.status === 'Finished' ? 'bg-green-100 text-green-800' : 
-                            order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
-                            order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 
-                            'bg-red-100 text-red-800'}`}>
-                          {order.status}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <button
-                        onClick={() => handleDelete(order.id)}
-                        className="border border-gray-300 text-gray-600 hover:text-red-600 hover:border-red-300 px-3 py-1 rounded-lg transition font-medium text-xs"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                    <tr key={order.id} className="border-b border-gray-200 hover:bg-brand-bg transition">
+                      <td className="px-6 py-4 text-sm font-medium text-brand-primary">{order.id}</td>
+                      <td className="px-6 py-4 text-sm text-gray-700">{order.customerName}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{order.itemName}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{order.quantity}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">Rs {order.price}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-brand-primary">
+                        Rs {order.total ? order.total.toFixed(2) : (order.quantity * order.price).toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{order.address}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{order.paymentType}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm cursor-pointer" onClick={() => { if (editingOrderId !== order.id) handleEditStatus(order); }}>
+                        {editingOrderId === order.id ? (
+                          <div className="flex gap-2 items-center">
+                            <select
+                              value={editingStatus}
+                              onChange={(e) => setEditingStatus(e.target.value)}
+                              className="px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                              autoFocus
+                            >
+                              <option value="Pending">Pending</option>
+                              <option value="Shipped">Shipped</option>
+                              <option value="Finished">Finished</option>
+                              <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatusUpdate(order.id);
+                              }}
+                              className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-green-600 transition"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCancelEdit();
+                              }}
+                              className="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <span className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full hover:opacity-80 transition
+                          ${order.status === 'Finished' ? 'bg-green-100 text-green-800' :
+                              order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                                  'bg-red-100 text-red-800'}`}>
+                            {order.status}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <button
+                          onClick={() => handleDelete(order.id)}
+                          className="border border-gray-300 text-gray-600 hover:text-red-600 hover:border-red-300 px-3 py-1 rounded-lg transition font-medium text-xs"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
             {orders.length === 0 && (

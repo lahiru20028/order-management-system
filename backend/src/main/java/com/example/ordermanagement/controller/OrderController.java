@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:5173") // Default Vite port
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" })
 public class OrderController {
 
     @Autowired
@@ -26,8 +26,9 @@ public class OrderController {
         return orderRepository.save(order);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody java.util.Map<String, String> request) {
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable("id") Long id,
+            @RequestBody java.util.Map<String, String> request) {
         return orderRepository.findById(id)
                 .map(order -> {
                     String status = request.get("status");
@@ -40,7 +41,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable("id") Long id) {
         orderRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
