@@ -3,8 +3,11 @@ package com.example.ordermanagement.controller;
 import com.example.ordermanagement.entity.Order;
 import com.example.ordermanagement.entity.OrderItem;
 import com.example.ordermanagement.repository.OrderRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +20,9 @@ public class OrderController {
     @Autowired
     private OrderRepository orderRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @GetMapping
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -24,7 +30,6 @@ public class OrderController {
 
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
-        // Set the parent reference on each item
         if (order.getItems() != null) {
             for (OrderItem item : order.getItems()) {
                 item.setOrder(order);
@@ -51,5 +56,15 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable("id") Long id) {
         orderRepository.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/reset")
+    @Transactional
+    public ResponseEntity<String> resetOrders() {
+        entityManager.createNativeQuery("DELETE FROM order_items").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM orders").executeUpdate();
+        entityManager.createNativeQuery("ALTER SEQUENCE orders_id_seq RESTART WITH 1").executeUpdate();
+        entityManager.createNativeQuery("ALTER SEQUENCE order_items_id_seq RESTART WITH 1").executeUpdate();
+        return ResponseEntity.ok("Reset complete. Next order will start at ID 1.");
     }
 }

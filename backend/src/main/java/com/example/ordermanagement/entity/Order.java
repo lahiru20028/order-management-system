@@ -17,6 +17,7 @@ public class Order {
     private String customerName;
     private String address;
     private String paymentType;
+    private String deliveryType;
     private String status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -54,6 +55,14 @@ public class Order {
         this.paymentType = paymentType;
     }
 
+    public String getDeliveryType() {
+        return deliveryType;
+    }
+
+    public void setDeliveryType(String deliveryType) {
+        this.deliveryType = deliveryType;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -72,13 +81,25 @@ public class Order {
 
     @Transient
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Double getDeliveryCost() {
+        if ("Speed Post".equals(deliveryType))
+            return 350.0;
+        if ("Courier Service".equals(deliveryType))
+            return 550.0;
+        return 0.0;
+    }
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Double getTotal() {
-        if (items == null || items.isEmpty())
-            return 0.0;
-        return items.stream()
-                .mapToDouble(item -> (item.getPrice() != null && item.getQuantity() != null)
-                        ? item.getPrice() * item.getQuantity()
-                        : 0.0)
-                .sum();
+        double itemsTotal = 0.0;
+        if (items != null && !items.isEmpty()) {
+            itemsTotal = items.stream()
+                    .mapToDouble(item -> (item.getPrice() != null && item.getQuantity() != null)
+                            ? item.getPrice() * item.getQuantity()
+                            : 0.0)
+                    .sum();
+        }
+        return itemsTotal + getDeliveryCost();
     }
 }

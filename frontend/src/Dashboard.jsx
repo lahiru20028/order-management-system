@@ -10,7 +10,8 @@ export default function Dashboard({ user, onLogout }) {
   const [formData, setFormData] = useState({
     customerName: '',
     address: '',
-    paymentType: 'Bank Transfer'
+    paymentType: 'Bank Transfer',
+    deliveryType: 'Speed Post'
   });
   const [items, setItems] = useState([{ itemName: '', quantity: 1, price: 0.0 }]);
 
@@ -79,6 +80,7 @@ export default function Dashboard({ user, onLogout }) {
         customerName: formData.customerName.trim(),
         address: formData.address.trim(),
         paymentType: formData.paymentType,
+        deliveryType: formData.deliveryType,
         status: 'Pending',
         items: items.map(item => ({
           itemName: item.itemName.trim(),
@@ -92,7 +94,8 @@ export default function Dashboard({ user, onLogout }) {
       setFormData({
         customerName: '',
         address: '',
-        paymentType: 'Bank Transfer'
+        paymentType: 'Bank Transfer',
+        deliveryType: 'Speed Post'
       });
       setItems([{ itemName: '', quantity: 1, price: 0.0 }]);
       alert('Order created successfully!');
@@ -254,6 +257,18 @@ export default function Dashboard({ user, onLogout }) {
                   <option value="COD">COD</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-brand-primary mb-1">Delivery Type</label>
+                <select
+                  name="deliveryType"
+                  value={formData.deliveryType}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition"
+                >
+                  <option value="Speed Post">Speed Post - Rs 350.00</option>
+                  <option value="Courier Service">Courier Service - Rs 550.00</option>
+                </select>
+              </div>
             </div>
 
             {/* Items section */}
@@ -358,6 +373,7 @@ export default function Dashboard({ user, onLogout }) {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Qty</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Price</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Subtotal</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Delivery</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Total</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Address</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Payment</th>
@@ -393,6 +409,10 @@ export default function Dashboard({ user, onLogout }) {
                         )}
                         {idx === 0 && (
                           <>
+                            <td rowSpan={itemCount} className="px-4 py-3 text-sm align-top" style={{ color: '#1A2B23' }}>
+                              {order.deliveryType || '-'}<br />
+                              <span className="text-xs" style={{ color: '#C5A059' }}>Rs {order.deliveryCost ? order.deliveryCost.toFixed(2) : '0.00'}</span>
+                            </td>
                             <td rowSpan={itemCount} className="px-4 py-3 text-sm font-bold align-top" style={{ color: '#C5A059' }}>
                               Rs {order.total ? order.total.toFixed(2) : '0.00'}
                             </td>
