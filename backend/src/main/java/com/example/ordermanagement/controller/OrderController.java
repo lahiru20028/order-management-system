@@ -1,6 +1,7 @@
 package com.example.ordermanagement.controller;
 
 import com.example.ordermanagement.entity.Order;
+import com.example.ordermanagement.entity.OrderItem;
 import com.example.ordermanagement.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,12 @@ public class OrderController {
 
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
+        // Set the parent reference on each item
+        if (order.getItems() != null) {
+            for (OrderItem item : order.getItems()) {
+                item.setOrder(order);
+            }
+        }
         return orderRepository.save(order);
     }
 

@@ -1,4 +1,1 @@
-com\example\ordermanagement\repository\OrderRepository.class
-com\example\ordermanagement\controller\OrderController.class
-com\example\ordermanagement\entity\Order.class
 com\example\ordermanagement\OrderManagementApplication.class
