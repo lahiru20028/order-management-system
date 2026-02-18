@@ -435,7 +435,13 @@ export default function Dashboard({ user, onLogout }) {
                                   </button>
                                 </div>
                               ) : (
-                                <span className="text-sm font-bold" style={{ color: '#1A2B23' }}>
+                                <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full" style={
+                                  order.status === 'Pending' ? { backgroundColor: '#F59E0B', color: '#FFFFFF' } :
+                                    order.status === 'Shipped' ? { backgroundColor: '#3B82F6', color: '#FFFFFF' } :
+                                      order.status === 'Finished' ? { backgroundColor: '#10B981', color: '#FFFFFF' } :
+                                        order.status === 'Cancelled' ? { backgroundColor: '#EF4444', color: '#FFFFFF' } :
+                                          { backgroundColor: '#C5A059', color: '#FFFFFF' }
+                                }>
                                   {order.status}
                                 </span>
                               )}
